@@ -14,8 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec";
+import { supabase } from "@/integrations/supabase/client";
 
 interface BookingModalProps {
   open: boolean;
@@ -34,22 +33,16 @@ const BookingModal = ({ open, onOpenChange }: BookingModalProps) => {
     e.preventDefault();
     setLoading(true);
 
-    const payload = {
-      action: "booking",
-      customer_name: name,
-      customer_phone: phone,
-      service_type: service,
-      hairdresser_name: stylist,
-      booking_date: datetime,
-    };
-
     try {
-      await fetch(GOOGLE_SCRIPT_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-        mode: "no-cors",
+      const { error } = await supabase.from("bookings").insert({
+        customer_name: name,
+        customer_phone: phone,
+        service_type: service,
+        hairdresser_name: stylist,
+        booking_date: new Date(datetime).toISOString(),
       });
+
+      if (error) throw error;
 
       toast.success("จองคิวสำเร็จแล้วค่ะ 💖", {
         description: "เราจะติดต่อกลับเพื่อยืนยันนัดหมายนะคะ",

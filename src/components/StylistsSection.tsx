@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import stylistMod from "@/assets/stylist-mod.jpg";
 import stylistBow from "@/assets/stylist-bow.jpg";
 import stylistPop from "@/assets/stylist-pop.jpg";
@@ -6,6 +7,7 @@ import stylistPop from "@/assets/stylist-pop.jpg";
 const stylists = [
   {
     id: "jane",
+    dbName: "ช่างเจน",
     name: "ช่างเจน (Jane)",
     image: stylistMod,
     specialty: "ผู้เชี่ยวชาญด้านการตัดผมสไตล์เกาหลี",
@@ -13,6 +15,7 @@ const stylists = [
   },
   {
     id: "noon",
+    dbName: "ช่างนุ่น",
     name: "ช่างนุ่น (Noon)",
     image: stylistPop,
     specialty: "ถนัดทำสีผมและไฮไลท์",
@@ -20,6 +23,7 @@ const stylists = [
   },
   {
     id: "bow",
+    dbName: "ช่างโบว์",
     name: "ช่างโบว์ (Bow)",
     image: stylistBow,
     specialty: "สไตลิสต์ดัดวอลลุ่มและทรีทเมนต์",
@@ -28,21 +32,68 @@ const stylists = [
 ];
 
 const days = ["จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์", "อาทิตย์"];
+const dayMap: Record<string, number> = {
+  "อาทิตย์": 0, "จันทร์": 1, "อังคาร": 2, "พุธ": 3,
+  "พฤหัสบดี": 4, "ศุกร์": 5, "เสาร์": 6,
+};
 const timeSlots = ["09:00", "10:00", "11:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00"];
 
-// Mock availability data
-const bookedSlots: Record<string, string[]> = {
-  jane: ["จันทร์-09:00", "จันทร์-10:00", "อังคาร-13:00", "พุธ-15:00", "พฤหัสบดี-09:00", "ศุกร์-14:00", "ศุกร์-15:00", "เสาร์-10:00", "เสาร์-11:00", "เสาร์-13:00"],
-  noon: ["จันทร์-14:00", "อังคาร-09:00", "อังคาร-10:00", "พุธ-16:00", "พุธ-17:00", "พฤหัสบดี-13:00", "เสาร์-09:00", "เสาร์-10:00", "อาทิตย์-14:00"],
-  bow: ["จันทร์-11:00", "อังคาร-15:00", "อังคาร-16:00", "พุธ-09:00", "พฤหัสบดี-14:00", "พฤหัสบดี-15:00", "ศุกร์-09:00", "ศุกร์-10:00", "เสาร์-17:00", "อาทิตย์-09:00", "อาทิตย์-10:00"],
+const getWeekDates = () => {
+  const now = new Date();
+  const currentDay = now.getDay(); // 0=Sun
+  const monday = new Date(now);
+  monday.setDate(now.getDate() - ((currentDay + 6) % 7));
+  monday.setHours(0, 0, 0, 0);
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+  sunday.setHours(23, 59, 59, 999);
+  return { monday, sunday };
 };
 
 const StylistsSection = () => {
   const [selected, setSelected] = useState("jane");
+  const [bookedSlots, setBookedSlots] = useState<Set<string>>(new Set());
 
-  const isBooked = (day: string, time: string) => {
-    return bookedSlots[selected]?.includes(`${day}-${time}`) ?? false;
-  };
+  const fetchBookings = useCallback(async () => {
+    const stylist = stylists.find((s) => s.id === selected);
+    if (!stylist) return;
+
+    const { monday, sunday } = getWeekDates();
+
+    const { data } = await supabase
+      .from("bookings")
+      .select("booking_date")
+      .eq("hairdresser_name", stylist.dbName)
+      .gte("booking_date", monday.toISOString())
+      .lte("booking_date", sunday.toISOString());
+
+    const slots = new Set<string>();
+    data?.forEach((b) => {
+      const d = new Date(b.booking_date);
+      const dayIndex = d.getDay();
+      const dayName = Object.entries(dayMap).find(([, v]) => v === dayIndex)?.[0];
+      const hour = d.getHours().toString().padStart(2, "0") + ":00";
+      if (dayName) slots.add(`${dayName}-${hour}`);
+    });
+    setBookedSlots(slots);
+  }, [selected]);
+
+  useEffect(() => {
+    fetchBookings();
+
+    const channel = supabase
+      .channel("bookings-realtime")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "bookings" },
+        () => fetchBookings()
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [fetchBookings]);
 
   return (
     <section id="stylists" className="py-20 px-4 bg-muted/40">
@@ -109,7 +160,7 @@ const StylistsSection = () => {
               <div key={time} className="grid grid-cols-8 gap-1 text-center text-xs mb-1">
                 <div className="py-2 font-semibold text-foreground rounded-xl bg-muted/60">{time}</div>
                 {days.map((day) => {
-                  const booked = isBooked(day, time);
+                  const booked = bookedSlots.has(`${day}-${time}`);
                   return (
                     <div
                       key={`${day}-${time}`}
