@@ -8,7 +8,7 @@ const Header = () => {
           Salon Sajai 💖
         </span>
         <a
-          href="https://line.me"
+          href="https://lin.ee/6cDhGJ3"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-2 rounded-2xl bg-salon-green px-4 py-2 text-sm font-semibold text-primary-foreground transition-all hover:scale-105 hover:shadow-cute-hover"

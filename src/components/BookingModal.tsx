@@ -15,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { submitBooking } from "@/lib/api";
 
 interface BookingModalProps {
   open: boolean;
@@ -33,18 +34,28 @@ const BookingModal = ({ open, onOpenChange }: BookingModalProps) => {
     e.preventDefault();
     setLoading(true);
 
-    try {
-      const { error } = await supabase.from("bookings").insert({
-        customer_name: name,
-        customer_phone: phone,
-        service_type: service,
-        hairdresser_name: stylist,
-        booking_date: new Date(datetime).toISOString(),
-      });
+    const bookingData = {
+      customer_name: name,
+      customer_phone: phone,
+      service_type: service,
+      hairdresser_name: stylist || "ไม่ระบุ",
+      booking_date: new Date(datetime).toISOString(),
+    };
 
+    try {
+      // บันทึกลง Supabase (real-time)
+      const { error } = await supabase.from("bookings").insert(bookingData);
       if (error) throw error;
 
-      toast.success("จองคิวสำเร็จแล้วค่ะ 💖", {
+      // ส่งไปยัง API ภายนอก (Google Sheet / อื่นๆ)
+      try {
+        await submitBooking(bookingData);
+      } catch {
+        // ถ้า API URL ยังไม่ได้ตั้งค่า จะข้ามไป ไม่ block การจอง
+        console.warn("External API not configured yet");
+      }
+
+      toast.success("จองคิวสำเร็จ รอรับบริการได้เลยค่ะ 💖", {
         description: "เราจะติดต่อกลับเพื่อยืนยันนัดหมายนะคะ",
       });
       onOpenChange(false);
