@@ -1,0 +1,24 @@
+import { MessageCircle } from "lucide-react";
+
+const Header = () => {
+  return (
+    <header className="fixed top-0 left-0 right-0 z-50 glass">
+      <div className="container mx-auto flex items-center justify-between py-3">
+        <span className="text-xl font-bold text-foreground tracking-tight">
+          Bloom Salon ✨
+        </span>
+        <a
+          href="https://line.me"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 rounded-2xl bg-salon-green px-4 py-2 text-sm font-semibold text-primary-foreground transition-all hover:scale-105 hover:shadow-cute-hover"
+        >
+          <MessageCircle size={18} />
+          สอบถามทาง LINE
+        </a>
+      </div>
+    </header>
+  );
+};
+
+export default Header;
