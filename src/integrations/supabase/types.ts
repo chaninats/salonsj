@@ -49,7 +49,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_booking_availability: {
+        Args: {
+          p_end_date: string
+          p_hairdresser_name: string
+          p_start_date: string
+        }
+        Returns: {
+          booking_date: string
+          hairdresser_name: string
+          service_type: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
