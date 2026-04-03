@@ -20,7 +20,7 @@ const HeroSection = ({ onBookingClick }: HeroSectionProps) => {
           ยินดีต้อนรับสู่ Bloom Salon 💖
         </h1>
         <p className="text-lg md:text-xl text-muted-foreground mb-8 font-medium">
-          เปลี่ยนลุคใหม่ให้คุณมั่นใจและน่ารักกว่าที่เคย
+          ร้านทำผมสไตล์น่ารักย่านสยามสแควร์ เปลี่ยนลุคใหม่ให้คุณมั่นใจกว่าที่เคย
         </p>
         <button
           onClick={onBookingClick}
