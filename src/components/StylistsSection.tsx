@@ -14,14 +14,14 @@ const stylists = [
   {
     id: "noon",
     name: "ช่างนุ่น (Noon)",
-    image: stylistBow,
+    image: stylistPop,
     specialty: "ถนัดทำสีผมและไฮไลท์",
     tag: "Color Queen 🎨",
   },
   {
     id: "bow",
     name: "ช่างโบว์ (Bow)",
-    image: stylistPop,
+    image: stylistBow,
     specialty: "สไตลิสต์ดัดวอลลุ่มและทรีทเมนต์",
     tag: "Perm & Care 💖",
   },
@@ -91,11 +91,11 @@ const StylistsSection = () => {
             📅 ตารางคิวสัปดาห์นี้ — {stylists.find((s) => s.id === selected)?.name}
           </h3>
           <div className="flex items-center justify-center gap-4 mb-4 text-xs font-semibold">
-            <span className="flex items-center gap-1">
-              <span className="inline-block h-3 w-3 rounded-full bg-salon-mint" /> ว่าง
+            <span className="flex items-center gap-1.5">
+              <span className="inline-block h-3.5 w-3.5 rounded-full bg-green-500 shadow-sm" /> ว่าง
             </span>
-            <span className="flex items-center gap-1">
-              <span className="inline-block h-3 w-3 rounded-full bg-salon-pink" /> ติดจองแล้ว
+            <span className="flex items-center gap-1.5">
+              <span className="inline-block h-3.5 w-3.5 rounded-full bg-red-400 shadow-sm" /> ติดจองแล้ว
             </span>
           </div>
           <div className="min-w-[600px]">
@@ -115,8 +115,8 @@ const StylistsSection = () => {
                       key={`${day}-${time}`}
                       className={`py-2 rounded-xl font-semibold transition-colors ${
                         booked
-                          ? "bg-salon-pink/30 text-primary"
-                          : "bg-salon-mint/25 text-salon-green"
+                          ? "bg-red-400/30 text-red-600 border border-red-300/50"
+                          : "bg-green-400/25 text-green-700 border border-green-300/40"
                       }`}
                     >
                       {booked ? "🔴" : "🟢"}
