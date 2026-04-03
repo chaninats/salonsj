@@ -46,7 +46,7 @@ const Footer = () => {
         </div>
       </div>
       <p className="text-center text-xs text-muted-foreground mt-8">
-        © 2026 Bloom Salon ✨ All rights reserved.
+        © 2026 Salon Sajai 💖 All rights reserved.
       </p>
     </footer>
   );

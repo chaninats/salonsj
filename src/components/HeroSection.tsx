@@ -9,7 +9,7 @@ const HeroSection = ({ onBookingClick }: HeroSectionProps) => {
     <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-16">
       <img
         src={heroBg}
-        alt="Bloom Salon background"
+        alt="Salon Sajai background"
         className="absolute inset-0 w-full h-full object-cover"
         width={1920}
         height={1080}
@@ -17,7 +17,7 @@ const HeroSection = ({ onBookingClick }: HeroSectionProps) => {
       <div className="absolute inset-0 gradient-hero opacity-80" />
       <div className="relative z-10 text-center px-4 max-w-2xl mx-auto">
         <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4 leading-tight">
-          ยินดีต้อนรับสู่ Bloom Salon 💖
+          ยินดีต้อนรับสู่ Salon Sajai 💖
         </h1>
         <p className="text-lg md:text-xl text-muted-foreground mb-8 font-medium">
           ร้านทำผมสไตล์น่ารักย่านสยามสแควร์ เปลี่ยนลุคใหม่ให้คุณมั่นใจกว่าที่เคย
