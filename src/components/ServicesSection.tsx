@@ -1,16 +1,35 @@
-import { Scissors, Sparkles, Palette, Wind, Star, Droplets, Crown } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Scissors, Sparkles, Palette, Wind, Star, Droplets, Crown, Loader2 } from "lucide-react";
+import { fetchServicePrice } from "@/lib/api";
 
 const services = [
-  { icon: Scissors, name: "ตัดผมชาย", price: "200.-", recommended: false },
-  { icon: Scissors, name: "ตัดผมหญิง", price: "150.-", recommended: false },
-  { icon: Wind, name: "สระไดร์", price: "150.-", recommended: false },
-  { icon: Palette, name: "ทำสีผม", price: "1,500.-", recommended: true },
-  { icon: Sparkles, name: "ดัดวอลลุ่ม", price: "500.-", recommended: true },
-  { icon: Droplets, name: "ยืดผม", price: "1,500.-", recommended: false },
-  { icon: Crown, name: "ทรีทเมนต์บำรุงผม", price: "2,000.-", recommended: true },
+  { icon: Scissors, name: "ตัดผมชาย", fallbackPrice: "200.-", recommended: false },
+  { icon: Scissors, name: "ตัดผมหญิง", fallbackPrice: "150.-", recommended: false },
+  { icon: Wind, name: "สระไดร์", fallbackPrice: "150.-", recommended: false },
+  { icon: Palette, name: "ทำสีผม", fallbackPrice: "1,500.-", recommended: true },
+  { icon: Sparkles, name: "ดัดวอลลุ่ม", fallbackPrice: "500.-", recommended: true },
+  { icon: Droplets, name: "ยืดผม", fallbackPrice: "1,500.-", recommended: false },
+  { icon: Crown, name: "ทรีทเมนต์บำรุงผม", fallbackPrice: "2,000.-", recommended: true },
 ];
 
 const ServicesSection = () => {
+  const [prices, setPrices] = useState<Record<string, string>>({});
+  const [loadingPrices, setLoadingPrices] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    services.forEach(async (s) => {
+      setLoadingPrices((prev) => ({ ...prev, [s.name]: true }));
+      try {
+        const price = await fetchServicePrice(s.name);
+        setPrices((prev) => ({ ...prev, [s.name]: price }));
+      } catch {
+        // ใช้ fallbackPrice ถ้า API ยังไม่พร้อม
+      } finally {
+        setLoadingPrices((prev) => ({ ...prev, [s.name]: false }));
+      }
+    });
+  }, []);
+
   return (
     <section id="services" className="py-20 px-4">
       <div className="container mx-auto">
@@ -32,7 +51,15 @@ const ServicesSection = () => {
                 <s.icon size={36} className="text-primary" />
               </div>
               <h3 className="text-base font-bold text-foreground mb-1">{s.name}</h3>
-              <p className="text-sm font-semibold text-muted-foreground">เริ่มต้น {s.price}</p>
+              <p className="text-sm font-semibold text-muted-foreground">
+                {loadingPrices[s.name] ? (
+                  <span className="inline-flex items-center gap-1">
+                    <Loader2 size={14} className="animate-spin" /> กำลังโหลด...
+                  </span>
+                ) : (
+                  <>เริ่มต้น {prices[s.name] || s.fallbackPrice}</>
+                )}
+              </p>
             </div>
           ))}
         </div>
