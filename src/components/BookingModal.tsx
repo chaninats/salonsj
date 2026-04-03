@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { X } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -16,6 +15,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec";
+
 interface BookingModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -27,18 +28,43 @@ const BookingModal = ({ open, onOpenChange }: BookingModalProps) => {
   const [service, setService] = useState("");
   const [stylist, setStylist] = useState("");
   const [datetime, setDatetime] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success("จองคิวสำเร็จแล้วค่ะ 💖", {
-      description: "เราจะติดต่อกลับเพื่อยืนยันนัดหมายนะคะ",
-    });
-    onOpenChange(false);
-    setName("");
-    setPhone("");
-    setService("");
-    setStylist("");
-    setDatetime("");
+    setLoading(true);
+
+    const payload = {
+      action: "booking",
+      customer_name: name,
+      customer_phone: phone,
+      service_type: service,
+      hairdresser_name: stylist,
+      booking_date: datetime,
+    };
+
+    try {
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        mode: "no-cors",
+      });
+
+      toast.success("จองคิวสำเร็จแล้วค่ะ 💖", {
+        description: "เราจะติดต่อกลับเพื่อยืนยันนัดหมายนะคะ",
+      });
+      onOpenChange(false);
+      setName("");
+      setPhone("");
+      setService("");
+      setStylist("");
+      setDatetime("");
+    } catch {
+      toast.error("เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้งค่ะ 😢");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -70,10 +96,13 @@ const BookingModal = ({ open, onOpenChange }: BookingModalProps) => {
               <SelectValue placeholder="เลือกบริการที่ต้องการ 💇‍♀️" />
             </SelectTrigger>
             <SelectContent className="rounded-2xl">
-              <SelectItem value="cut">ตัดผม</SelectItem>
-              <SelectItem value="perm">ดัดวอลลุ่ม</SelectItem>
-              <SelectItem value="color">ทำสีผม</SelectItem>
-              <SelectItem value="wash">สระไดร์</SelectItem>
+              <SelectItem value="ตัดผมชาย">ตัดผมชาย (200.-)</SelectItem>
+              <SelectItem value="ตัดผมหญิง">ตัดผมหญิง (150.-)</SelectItem>
+              <SelectItem value="สระไดร์">สระไดร์ (150.-)</SelectItem>
+              <SelectItem value="ทำสีผม">ทำสีผม (1,500.-)</SelectItem>
+              <SelectItem value="ดัดวอลลุ่ม">ดัดวอลลุ่ม (500.-)</SelectItem>
+              <SelectItem value="ยืดผม">ยืดผม (1,500.-)</SelectItem>
+              <SelectItem value="ทรีทเมนต์บำรุงผม">ทรีทเมนต์บำรุงผม (2,000.-)</SelectItem>
             </SelectContent>
           </Select>
           <Select value={stylist} onValueChange={setStylist}>
@@ -81,10 +110,10 @@ const BookingModal = ({ open, onOpenChange }: BookingModalProps) => {
               <SelectValue placeholder="เลือกช่างที่ต้องการ ✂️" />
             </SelectTrigger>
             <SelectContent className="rounded-2xl">
-              <SelectItem value="any">ไม่ระบุ</SelectItem>
-              <SelectItem value="mod">ช่างมด (Mod)</SelectItem>
-              <SelectItem value="bow">ช่างโบว์ (Bow)</SelectItem>
-              <SelectItem value="pop">ช่างป๊อป (Pop)</SelectItem>
+              <SelectItem value="ไม่ระบุ">ไม่ระบุ</SelectItem>
+              <SelectItem value="ช่างเจน">ช่างเจน (Jane)</SelectItem>
+              <SelectItem value="ช่างนุ่น">ช่างนุ่น (Noon)</SelectItem>
+              <SelectItem value="ช่างโบว์">ช่างโบว์ (Bow)</SelectItem>
             </SelectContent>
           </Select>
           <Input
@@ -96,9 +125,10 @@ const BookingModal = ({ open, onOpenChange }: BookingModalProps) => {
           />
           <button
             type="submit"
-            className="w-full rounded-2xl bg-primary py-3 text-lg font-bold text-primary-foreground shadow-cute transition-all hover:scale-[1.02] hover:shadow-cute-hover active:scale-95"
+            disabled={loading}
+            className="w-full rounded-2xl bg-primary py-3 text-lg font-bold text-primary-foreground shadow-cute transition-all hover:scale-[1.02] hover:shadow-cute-hover active:scale-95 disabled:opacity-60"
           >
-            ยืนยันการจอง 💖
+            {loading ? "กำลังจอง..." : "ยืนยันการจอง 💖"}
           </button>
         </form>
       </DialogContent>

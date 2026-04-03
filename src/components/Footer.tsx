@@ -1,4 +1,4 @@
-import { MapPin, Clock, Instagram } from "lucide-react";
+import { MapPin, Clock, MessageCircle, Instagram } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -9,7 +9,8 @@ const Footer = () => {
             <MapPin size={18} className="text-primary" /> ที่ตั้งร้าน
           </h3>
           <p className="text-sm text-muted-foreground">
-            123/45 ถนนสุขุมวิท ซอย 55<br />กรุงเทพมหานคร 10110
+            สยามสแควร์ซอย 5 ตรงข้ามกับ 7/11<br />
+            Rd, Pathum Wan, Bangkok 10330
           </p>
         </div>
         <div>
@@ -17,16 +18,31 @@ const Footer = () => {
             <Clock size={18} className="text-primary" /> เวลาเปิด-ปิด
           </h3>
           <p className="text-sm text-muted-foreground">
-            จันทร์ - เสาร์: 10:00 - 20:00<br />อาทิตย์: 10:00 - 18:00
+            ทุกวัน: 9:00 - 20:00
           </p>
         </div>
         <div>
           <h3 className="font-bold text-foreground mb-2 flex items-center justify-center md:justify-start gap-2">
-            <Instagram size={18} className="text-primary" /> ติดตามเรา
+            <MessageCircle size={18} className="text-primary" /> ติดต่อเรา
           </h3>
-          <p className="text-sm text-muted-foreground">
-            @bloomsalon.bkk
-          </p>
+          <div className="flex items-center justify-center md:justify-start gap-3 mt-1">
+            <a
+              href="https://line.me"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 rounded-2xl bg-salon-green px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-all hover:scale-105"
+            >
+              <MessageCircle size={14} /> LINE
+            </a>
+            <a
+              href="https://instagram.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 rounded-2xl bg-accent px-3 py-1.5 text-xs font-semibold text-accent-foreground transition-all hover:scale-105"
+            >
+              <Instagram size={14} /> Instagram
+            </a>
+          </div>
         </div>
       </div>
       <p className="text-center text-xs text-muted-foreground mt-8">
