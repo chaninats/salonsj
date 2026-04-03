@@ -5,7 +5,7 @@ const Header = () => {
     <header className="fixed top-0 left-0 right-0 z-50 glass">
       <div className="container mx-auto flex items-center justify-between py-3">
         <span className="text-xl font-bold text-foreground tracking-tight">
-          Bloom Salon ✨
+          Salon Sajai 💖
         </span>
         <a
           href="https://line.me"

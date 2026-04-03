@@ -9,7 +9,7 @@ const HeroSection = ({ onBookingClick }: HeroSectionProps) => {
     <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-16">
       <img
         src={heroBg}
-        alt="Bloom Salon background"
+        alt="Salon Sajai background"
         className="absolute inset-0 w-full h-full object-cover"
         width={1920}
         height={1080}
