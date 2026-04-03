@@ -60,15 +60,14 @@ const StylistsSection = () => {
 
     const { monday, sunday } = getWeekDates();
 
-    const { data } = await supabase
-      .from("bookings")
-      .select("booking_date")
-      .eq("hairdresser_name", stylist.dbName)
-      .gte("booking_date", monday.toISOString())
-      .lte("booking_date", sunday.toISOString());
+    const { data } = await supabase.rpc("get_booking_availability", {
+      p_hairdresser_name: stylist.dbName,
+      p_start_date: monday.toISOString(),
+      p_end_date: sunday.toISOString(),
+    });
 
     const slots = new Set<string>();
-    data?.forEach((b) => {
+    (data as { booking_date: string }[] | null)?.forEach((b) => {
       const d = new Date(b.booking_date);
       const dayIndex = d.getDay();
       const dayName = Object.entries(dayMap).find(([, v]) => v === dayIndex)?.[0];
@@ -81,17 +80,11 @@ const StylistsSection = () => {
   useEffect(() => {
     fetchBookings();
 
-    const channel = supabase
-      .channel("bookings-realtime")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "bookings" },
-        () => fetchBookings()
-      )
-      .subscribe();
+    // Poll every 10 seconds for near-real-time updates (secure alternative to realtime subscription)
+    const interval = setInterval(fetchBookings, 10000);
 
     return () => {
-      supabase.removeChannel(channel);
+      clearInterval(interval);
     };
   }, [fetchBookings]);
 
