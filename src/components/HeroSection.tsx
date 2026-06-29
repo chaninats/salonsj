@@ -6,7 +6,7 @@ interface HeroSectionProps {
 
 const HeroSection = ({ onBookingClick }: HeroSectionProps) => {
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-16">
+    <section id="home" className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-16">
       <img
         src={heroBg}
         alt="Salon Sajai background"
