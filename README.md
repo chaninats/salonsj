@@ -1,3 +1,2 @@
-# Welcome to your Lovable project
+# PROJECT TASK3 + Vibe Coding
 
-TODO: Document your project here
